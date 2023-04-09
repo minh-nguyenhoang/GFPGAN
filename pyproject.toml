@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "GFPGAN"
+version = "1.0.0"
+dependencies = [
+    "basicsr",
+    "facexlib",
+    "lmdb",
+    "numpy",
+    "opencv-python",
+    "pyyaml",
+    "scipy",
+    "tb-nightly",
+    "torch",
+    "torchvision",
+    "tqdm",
+    "yapf",
+]
+
+[tool.setuptools]
+packages = ["GFPGAN"]
