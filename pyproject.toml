@@ -6,18 +6,6 @@ build-backend = "setuptools.build_meta"
 name = "GFPGAN"
 version = "1.0.0"
 dependencies = [
-    "basicsr>=1.4.2",
-    "facexlib>=0.2.5",
-    "lmdb",
-    "numpy",
-    "opencv-python",
-    "pyyaml",
-    "scipy",
-    "tb-nightly",
-    "torch>=1.7",
-    "torchvision",
-    "tqdm",
-    "yapf"
 ]
 
 [tool.setuptools]
