@@ -76,15 +76,15 @@ class GFPGANer():
             from gfpgan.archs.restoreformer_arch import RestoreFormer
             self.gfpgan = RestoreFormer()
         # initialize face helper
-        self.face_helper = FaceRestoreHelper(
-            upscale,
-            face_size=512,
-            crop_ratio=(1, 1),
-            det_model='retinaface_resnet50',
-            save_ext='png',
-            use_parse=True,
-            device=self.device,
-            model_rootpath='gfpgan/weights')
+        # self.face_helper = FaceRestoreHelper(
+        #     upscale,
+        #     face_size=512,
+        #     crop_ratio=(1, 1),
+        #     det_model='retinaface_resnet50',
+        #     save_ext='png',
+        #     use_parse=True,
+        #     device=self.device,
+        #     model_rootpath='gfpgan/weights')
 
         if model_path.startswith('https://'):
             model_path = load_file_from_url(
@@ -99,23 +99,13 @@ class GFPGANer():
         self.gfpgan = self.gfpgan.to(self.device)
 
     @torch.no_grad()
-    def enhance(self, img, has_aligned=False, only_center_face=False, paste_back=True, weight=0.5):
-        self.face_helper.clean_all()
+    def enhance(self, img, weight=0.5):
 
-        if has_aligned:  # the inputs are already aligned
-            img = cv2.resize(img, (512, 512))
-            self.face_helper.cropped_faces = [img]
-        else:
-            self.face_helper.read_image(img)
-            # get face landmarks for each face
-            self.face_helper.get_face_landmarks_5(only_center_face=only_center_face, eye_dist_threshold=5)
-            # eye_dist_threshold=5: skip faces whose eye distance is smaller than 5 pixels
-            # TODO: even with eye_dist_threshold, it will still introduce wrong detections and restorations.
-            # align and warp each face
-            self.face_helper.align_warp_face()
+        img = cv2.resize(img, (512, 512))
+        self.cropped_faces = [img]
 
         # face restoration
-        for cropped_face in self.face_helper.cropped_faces:
+        for cropped_face in self.cropped_faces:
             # prepare data
             cropped_face_t = img2tensor(cropped_face / 255., bgr2rgb=True, float32=True)
             normalize(cropped_face_t, (0.5, 0.5, 0.5), (0.5, 0.5, 0.5), inplace=True)
@@ -130,19 +120,8 @@ class GFPGANer():
                 restored_face = cropped_face
 
             restored_face = restored_face.astype('uint8')
-            self.face_helper.add_restored_face(restored_face)
+            self.restored_faces = [restored_face]
 
-        if not has_aligned and paste_back:
-            # upsample the background
-            if self.bg_upsampler is not None:
-                # Now only support RealESRGAN for upsampling background
-                bg_img = self.bg_upsampler.enhance(img, outscale=self.upscale)[0]
-            else:
-                bg_img = None
 
-            self.face_helper.get_inverse_affine(None)
-            # paste each restored face to the input image
-            restored_img = self.face_helper.paste_faces_to_input_image(upsample_img=bg_img)
-            return self.face_helper.cropped_faces, self.face_helper.restored_faces, restored_img
         else:
-            return self.face_helper.cropped_faces, self.face_helper.restored_faces, None
+            return self.cropped_faces, self.restored_faces, None
