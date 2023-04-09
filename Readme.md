@@ -1,0 +1,1 @@
+This is the GFPGAN module taken from https://github.com/TencentARC/GFPGAN. Please refer to the original Github for license and usage.
