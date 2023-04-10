@@ -85,10 +85,15 @@ class GFPGANer():
         #     use_parse=True,
         #     device=self.device,
         #     model_rootpath='gfpgan/weights')
+        
 
         if model_path.startswith('https://'):
-            model_path = load_file_from_url(
-                url=model_path, model_dir=os.path.join(ROOT_DIR, 'gfpgan/weights'), progress=True, file_name=None)
+            model_name = model_path.split('/')[-1]
+            if os.path.exists(f'gfpgan/weights/{model_name}'):
+                model_path = f'gfpgan/weights/{model_name}'
+            else:
+                model_path = load_file_from_url(
+                    url=model_path, model_dir=os.path.join(ROOT_DIR, 'gfpgan/weights'), progress=True, file_name=None)
         loadnet = torch.load(model_path)
         if 'params_ema' in loadnet:
             keyname = 'params_ema'
@@ -120,7 +125,7 @@ class GFPGANer():
                 restored_face = cropped_face
 
             restored_face = restored_face.astype('uint8')
-            self.restored_faces = [restored_face]
+            self.restored_faces = [restored_face[:,:,::-1]]
 
 
         else:
