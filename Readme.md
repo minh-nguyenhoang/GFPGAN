@@ -2,10 +2,13 @@ This is the GFPGAN module taken from https://github.com/TencentARC/GFPGAN. Pleas
 
 # Installation
 
-!git clone https://github.com/minh-nguyenhoang/gfpgan.git \n
-!pip install basicsr\n
-!pip install facexlib\n
-!pip install -r gfpgan/requirements.txt\n
+!git clone https://github.com/minh-nguyenhoang/gfpgan.git 
+
+!pip install basicsr
+
+!pip install facexlib
+
+!pip install -r gfpgan/requirements.txt
 
 # Usage
 
